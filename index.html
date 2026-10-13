@@ -62,7 +62,7 @@
             margin-top: 5px;
         }
 
-        /* Navigation Tabs */
+        /* Tabs */
         .tabs {
             display: flex;
             gap: 10px;
@@ -89,7 +89,7 @@
         .tab-content { display: none; }
         .tab-content.active { display: block; }
 
-        /* Φόρμα Καταγραφής με Κωδικό Ημέρας */
+        /* Φόρμα Καταγραφής */
         .form-card {
             background: #061527;
             padding: 20px;
@@ -116,6 +116,7 @@
             min-width: 180px;
             background: #0d213a;
             color: #ffffff;
+            text-transform: uppercase;
         }
         .pin-input {
             border: 2px solid var(--eod-red) !important;
@@ -153,7 +154,7 @@
             color: #ffffff;
         }
 
-        /* Monitor Board / Stats Panel (Tab 2) */
+        /* Monitor Panel (Tab 2) */
         .stats-banner {
             display: flex;
             justify-content: space-around;
@@ -165,19 +166,12 @@
             margin-bottom: 20px;
             text-align: center;
         }
-        .stat-box {
-            flex: 1;
-        }
-        .stat-box .number {
+        .stat-box .number, .stat-box .percentage {
             font-size: 36px;
             font-weight: bold;
             color: #28a745;
         }
-        .stat-box .percentage {
-            font-size: 36px;
-            font-weight: bold;
-            color: #4da6ff;
-        }
+        .stat-box .percentage { color: #4da6ff; }
         .stat-box .label {
             font-size: 14px;
             color: #cccccc;
@@ -208,14 +202,6 @@
             font-weight: 600;
         }
         tr:nth-child(even) { background-color: #0c1e36; }
-        .badge-on {
-            background-color: var(--eod-green);
-            color: white;
-            padding: 5px 12px;
-            border-radius: 12px;
-            font-weight: bold;
-            font-size: 12px;
-        }
     </style>
 </head>
 <body>
@@ -235,16 +221,15 @@
         <button class="tab-button" onclick="switchTab('tab-monitor', this)">📺 2. Οθόνη ΚΕΠΙΧ (Μόνο Ενεργοί Online)</button>
     </div>
 
-    <!-- TAB 1: Καταγραφή & Διαχείριση -->
+    <!-- TAB 1: Καταγραφή & Ημερολόγιο -->
     <div id="tab-admin" class="tab-content active">
         
-        <!-- Φόρμα Καταγραφής με Κωδικό Ημέρας -->
         <div class="form-card">
             <h3>🔑 Φόρμα Καταγραφής Παρουσίας / Αποχώρησης</h3>
             <div class="form-grid">
                 <input type="password" id="dayPin" class="pin-input" placeholder="🔒 Κωδικός Ημέρας (PIN)" required>
-                <input type="text" id="callsignInput" placeholder="Callsgn (π.χ. 0352 ή 319)" onblur="formatCallsign(this)">
-                <input type="text" id="nameInput" placeholder="Όνομα στελέχους (π.χ. Ανέστης Θεοδωρίδης)" onblur="formatName(this)">
+                <input type="text" id="callsignInput" placeholder="Callsign (π.χ. 0352 ή 319)" onblur="formatCallsign(this)">
+                <input type="text" id="nameInput" placeholder="Όνομα στελέχους" oninput="formatName(this)">
                 <select id="actionInput">
                     <option value="ON">🟢 Παρουσία (Check-in)</option>
                     <option value="OFF">🔴 Αποχώρηση (Check-out)</option>
@@ -253,13 +238,11 @@
             </div>
         </div>
 
-        <!-- Ημερολόγιο Εργασιών Ημέρας -->
         <div class="daily-log-section">
             <h4>📝 Ημερολόγιο Εργασιών &amp; Συμβάντων Βάρδιας</h4>
             <textarea id="dailyLogText" placeholder="Σημειώστε εδώ εργασίες, συμβάντα, αλλαγές βάρδιας ή παρατηρήσεις..."></textarea>
         </div>
 
-        <!-- Πλήρες Ιστορικό Κινήσεων -->
         <h3>📅 Πλήρες Ιστορικό Παρουσιών</h3>
         <table>
             <thead>
@@ -279,10 +262,8 @@
         </table>
     </div>
 
-    <!-- TAB 2: Οθόνη ΚΕΠΙΧ (Μόνο ONLINE) -->
+    <!-- TAB 2: Οθόνη ΚΕΠΙΧ -->
     <div id="tab-monitor" class="tab-content">
-        
-        <!-- Στατιστικό Banner -->
         <div class="stats-banner">
             <div class="stat-box">
                 <div class="number" id="activeCount">0</div>
@@ -314,7 +295,7 @@
 </div>
 
 <script>
-    const DAY_PIN = "1122"; // Ο Κωδικός Ημέρας για έγκριση καταγραφής
+    const DAY_PIN = "1122";
 
     function switchTab(tabId, btn) {
         document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
@@ -333,16 +314,15 @@
         }
     }
 
+    // Μετατροπή ΟΛΩΝ σε ΚΕΦΑΛΑΙΑ ΕΛΛΗΝΙΚΑ αυτόματα
     function formatName(input) {
-        let val = input.value.trim();
-        if (!val) return;
-
-        // Μετατροπή αγγλικών σε ελληνικά
-        const g2e = {'a':'α','b':'β','c':'ψ','d':'δ','e':'ε','f':'φ','g':'γ','h':'η','i':'ι','j':'τζ','k':'κ','l':'λ','m':'μ','n':'ν','o':'ο','p':'π','q':'κ','r':'ρ','s':'σ','t':'τ','u':'υ','v':'β','w':'ω','x':'ξ','y':'υ','z':'ζ'};
-        let cleanStr = val.toLowerCase().split('').map(char => g2e[char] || char).join('');
-        
-        // Title Case: Μικρά ελληνικά με κεφαλαία τα πρώτα γράμματα
-        input.value = cleanStr.replace(/(?:^|\s)\S/g, a => a.toUpperCase());
+        let val = input.value.toUpperCase();
+        const g2e = {
+            'A':'Α','B':'Β','C':'Ψ','D':'Δ','E':'Ε','F':'Φ','G':'Γ','H':'Η','I':'Ι','J':'ΤΖ',
+            'K':'Κ','L':'Λ','M':'Μ','N':'Ν','O':'Ο','P':'Π','Q':'Κ','R':'Ρ','S':'Σ','T':'Τ',
+            'U':'Υ','V':'Β','W':'Ω','X':'Ξ','Y':'Υ','Z':'Ζ'
+        };
+        input.value = val.split('').map(char => g2e[char] || char).join('');
     }
 
     async function submitAttendance() {
@@ -355,10 +335,9 @@
         const callsignInput = document.getElementById('callsignInput');
         const nameInput = document.getElementById('nameInput');
         formatCallsign(callsignInput);
-        formatName(nameInput);
 
         const callsign = callsignInput.value;
-        const name = nameInput.value;
+        const name = nameInput.value.trim();
         const action = document.getElementById('actionInput').value;
 
         if (!callsign || !name) {
