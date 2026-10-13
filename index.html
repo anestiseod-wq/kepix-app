@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ΚΕΠΙΧ ΕΟΔ Αττικής - Ημερολόγιο & Παρουσιολόγιο</title>
+    <title>ΚΕΠΙΧ ΕΟΔ Αττικής - Ημερολόγιο &amp; Παρουσιολόγιο</title>
     <style>
         :root {
             --eod-blue: #003366;
@@ -33,7 +33,6 @@
             border-top: 6px solid var(--eod-red);
         }
 
-        /* Lock Screen Overlay */
         #lockScreen {
             position: fixed;
             top: 0; left: 0;
@@ -66,11 +65,8 @@
             border: none;
             border-radius: 6px;
             cursor: pointer;
-            transition: 0.2s;
         }
-        #lockScreen button:hover { background: #218838; }
 
-        /* Header */
         .header {
             display: flex;
             align-items: center;
@@ -91,7 +87,6 @@
             margin: 0;
             font-size: 24px;
             font-weight: 700;
-            letter-spacing: 0.5px;
         }
         .header .subtitle {
             font-size: 14px;
@@ -100,7 +95,44 @@
             margin-top: 5px;
         }
 
-        /* Ημερολόγιο Εργασιών Ημέρας */
+        .simulator-section {
+            background: #061527;
+            padding: 18px;
+            border-radius: 8px;
+            border: 2px dashed #4da6ff;
+            margin-bottom: 25px;
+        }
+        .simulator-section h3 {
+            margin: 0 0 12px 0;
+            color: #4da6ff;
+            font-size: 16px;
+        }
+        .sim-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            align-items: center;
+        }
+        .sim-grid select, .sim-grid input {
+            padding: 10px;
+            border-radius: 6px;
+            border: 1px solid #1f4270;
+            background: #0d213a;
+            color: #fff;
+            font-size: 14px;
+            flex: 1;
+            min-width: 150px;
+        }
+        .btn-sim {
+            background: #17a2b8;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
         .daily-log-section {
             background: #061527;
             padding: 15px;
@@ -108,11 +140,7 @@
             border-left: 5px solid var(--eod-red);
             margin-bottom: 20px;
         }
-        .daily-log-section h4 {
-            margin: 0 0 8px 0;
-            color: #ffffff;
-            font-size: 16px;
-        }
+        .daily-log-section h4 { margin: 0 0 8px 0; color: #ffffff; }
         .daily-log-section textarea {
             width: 100%;
             height: 75px;
@@ -121,12 +149,10 @@
             border-radius: 6px;
             font-size: 14px;
             box-sizing: border-box;
-            resize: vertical;
             background: #0d213a;
             color: #ffffff;
         }
 
-        /* Φόρμα Καταγραφής */
         .form-group {
             display: flex;
             flex-wrap: wrap;
@@ -155,17 +181,9 @@
             border-radius: 6px;
             cursor: pointer;
             font-weight: bold;
-            font-size: 14px;
         }
-        .btn-submit:hover { background-color: #218838; }
 
-        /* Tabs Navigation */
-        .tabs {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 15px;
-            border-bottom: 2px solid var(--eod-red);
-        }
+        .tabs { display: flex; gap: 8px; margin-bottom: 15px; border-bottom: 2px solid var(--eod-red); }
         .tab-button {
             padding: 12px 22px;
             border: none;
@@ -177,63 +195,19 @@
             font-size: 15px;
             color: #8cb8ff;
         }
-        .tab-button.active {
-            background: var(--eod-red);
-            color: white;
-        }
+        .tab-button.active { background: var(--eod-red); color: white; }
 
         .tab-content { display: none; }
         .tab-content.active { display: block; }
 
-        /* Πίνακες */
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 10px;
-            background: #061527;
-            border-radius: 6px;
-            overflow: hidden;
-            color: #ffffff;
-        }
-        th, td {
-            padding: 12px 15px;
-            border: 1px solid #1f4270;
-            text-align: center;
-            font-size: 14px;
-        }
-        th {
-            background-color: var(--eod-blue);
-            color: white;
-            font-weight: 600;
-        }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; background: #061527; color: #ffffff; }
+        th, td { padding: 12px 15px; border: 1px solid #1f4270; text-align: center; font-size: 14px; }
+        th { background-color: var(--eod-blue); color: white; }
         tr:nth-child(even) { background-color: #0c1e36; }
-
-        .badge-on {
-            background-color: var(--eod-green);
-            color: white;
-            padding: 4px 10px;
-            border-radius: 12px;
-            font-weight: bold;
-            font-size: 12px;
-            display: inline-block;
-        }
-
-        .btn-delete {
-            background-color: var(--eod-red);
-            color: white;
-            border: none;
-            padding: 6px 12px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 12px;
-            font-weight: bold;
-        }
-        .btn-delete:hover { background-color: #bd2130; }
     </style>
 </head>
 <body>
 
-<!-- Οθόνη Κλειδώματος -->
 <div id="lockScreen">
     <h2>📡 ΚΕΠΙΧ ΕΟΔ Αττικής</h2>
     <p>Εισάγετε τον κωδικό πρόσβασης:</p>
@@ -246,17 +220,33 @@
         <img src="https://lookaside.fbsbx.com/lookaside/crawler/media/?media_id=627990019372463" alt="ΕΟΔ Αττικής Logo">
         <div>
             <h2>ΕΛΛΗΝΙΚΗ ΟΜΑΔΑ ΔΙΑΣΩΣΗΣ - ΑΤΤΙΚΗΣ</h2>
-            <div class="subtitle">ΚΕΠΙΧ - Ημερολόγιο Εργασίας & Παρουσιολόγιο</div>
+            <div class="subtitle">ΚΕΠΙΧ - Ημερολόγιο Εργασίας &amp; Παρουσιολόγιο</div>
         </div>
     </div>
 
-    <!-- Ημερολόγιο Εργασιών / Συμβάντων Ημέρας -->
+    <!-- Εικονικός Προσομοιωτής -->
+    <div class="simulator-section">
+        <h3>📲 Εικονικός Προσομοιωτής Επικοινωνιών (Virtual Channels)</h3>
+        <div class="sim-grid">
+            <select id="simChannel">
+                <option value="📞 Εικονικό IVR (Τηλεφωνία)">📞 Εικονικό IVR (Τηλεφωνία)</option>
+                <option value="💬 Εικονικό Viber Bot">💬 Εικονικό Viber Bot</option>
+                <option value="✉️ Εικονικό SMS">✉️ Εικονικό SMS</option>
+                <option value="📧 Εικονικό Email">📧 Εικονικό Email</option>
+            </select>
+            <input type="text" id="simPayload" placeholder="Εντολή (π.χ. 1 352 ή 2 319)">
+            <input type="text" id="simName" placeholder="Όνομα (π.χ. Ανέστης Θεοδωρίδης)">
+            <button class="btn-sim" onclick="runSimulation()">Αποστολή Σήματος</button>
+        </div>
+    </div>
+
+    <!-- Ημερολόγιο Εργασιών -->
     <div class="daily-log-section">
-        <h4>📝 Ημερολόγιο Εργασιών & Συμβάντων Ημέρας</h4>
+        <h4>📝 Ημερολόγιο Εργασιών &amp; Συμβάντων Ημέρας</h4>
         <textarea id="dailyLogText" placeholder="Σημειώστε εδώ εργασίες, συμβάντα ή παρατηρήσεις της βάρδιας/ημέρας..."></textarea>
     </div>
 
-    <!-- Φόρμα Καταγραφής -->
+    <!-- Φόρμα Καταγραφής Web -->
     <div class="form-group">
         <input type="text" id="callsignInput" placeholder="Callsign (π.χ. 0352 ή 319)" onblur="formatCallsign(this)">
         <input type="text" id="nameInput" placeholder="Όνομα στελέχους (π.χ. Ανέστης Θεοδωρίδης)" onblur="formatName(this)">
@@ -264,16 +254,15 @@
             <option value="ON">🟢 Παρουσία Ενεργή (Check-in)</option>
             <option value="OFF">🔴 Αποχώρηση (Check-out)</option>
         </select>
-        <button class="btn-submit" onclick="submitAttendance()">Καταγραφή</button>
+        <button class="btn-submit" onclick="submitAttendance()">Καταγραφή Web</button>
     </div>
 
-    <!-- Tabs Navigation -->
+    <!-- Tabs -->
     <div class="tabs">
         <button class="tab-button active" onclick="switchTab('active-tab', this)">🟢 Ενεργές Παρουσίες</button>
-        <button class="tab-button" onclick="switchTab('history-tab', this)">📅 Ιστορικό & Ημερολόγιο Εργασίας</button>
+        <button class="tab-button" onclick="switchTab('history-tab', this)">📅 Ιστορικό &amp; Ημερολόγιο Εργασίας</button>
     </div>
 
-    <!-- Tab 1: Μόνο Ενεργοί -->
     <div id="active-tab" class="tab-content active">
         <table>
             <thead>
@@ -283,16 +272,14 @@
                     <th>Κατάσταση</th>
                     <th>Ώρα Προσέλευσης</th>
                     <th>Κανάλι</th>
-                    <th>Διόρθωση</th>
                 </tr>
             </thead>
             <tbody id="active-table-body">
-                <tr><td colspan="6">Δεν υπάρχουν ενεργές παρουσίες αυτή τη στιγμή.</td></tr>
+                <tr><td colspan="5">Δεν υπάρχουν ενεργές παρουσίες αυτή τη στιγμή.</td></tr>
             </tbody>
         </table>
     </div>
 
-    <!-- Tab 2: Ιστορικό -->
     <div id="history-tab" class="tab-content">
         <table>
             <thead>
@@ -313,11 +300,9 @@
 
 <script>
     const ACCESS_PIN = "1122";
-    const ADMIN_PIN = "9999";
 
     function unlockApp() {
-        const input = document.getElementById('pinInput').value;
-        if (input === ACCESS_PIN) {
+        if (document.getElementById('pinInput').value === ACCESS_PIN) {
             document.getElementById('lockScreen').style.display = 'none';
         } else {
             alert('Λανθασμένος κωδικός πρόσβασης!');
@@ -327,13 +312,8 @@
     function formatCallsign(input) {
         let val = input.value.trim().replace(/[^0-9]/g, '');
         if (!val) return;
-        
-        if (val === '0352' || val === '352') {
-            input.value = '352';
-        } else if (val === '0306' || val === '306') {
-            input.value = '306';
-        } else if (val === '0307' || val === '307') {
-            input.value = '307';
+        if (['0352', '352', '0306', '306', '0307', '307'].includes(val)) {
+            input.value = val.replace(/^0+/, '');
         } else {
             input.value = 'ΑΤ-' + val;
         }
@@ -342,15 +322,9 @@
     function formatName(input) {
         let val = input.value.trim();
         if (!val) return;
-
-        const g2e = {
-            'a':'α','b':'β','c':'ψ','d':'δ','e':'ε','f':'φ','g':'γ','h':'η','i':'ι','j':'τζ',
-            'k':'κ','l':'λ','m':'μ','n':'ν','o':'ο','p':'π','q':'κ','r':'ρ','s':'σ','t':'τ',
-            'u':'υ','v':'β','w':'ω','x':'ξ','y':'υ','z':'ζ'
-        };
-
+        const g2e = {'a':'α','b':'β','c':'ψ','d':'δ','e':'ε','f':'φ','g':'γ','h':'η','i':'ι','j':'τζ','k':'κ','l':'λ','m':'μ','n':'ν','o':'ο','p':'π','q':'κ','r':'ρ','s':'σ','t':'τ','u':'υ','v':'β','w':'ω','x':'ξ','y':'υ','z':'ζ'};
         let cleanStr = val.toLowerCase().split('').map(char => g2e[char] || char).join('');
-        input.value = cleanStr.replace(/(?:^|\s)\S/g, function(a) { return a.toUpperCase(); });
+        input.value = cleanStr.replace(/(?:^|\s)\S/g, a => a.toUpperCase());
     }
 
     function switchTab(tabId, btn) {
@@ -360,10 +334,37 @@
         btn.classList.add('active');
     }
 
+    async function runSimulation() {
+        const channel = document.getElementById('simChannel').value;
+        const payload = document.getElementById('simPayload').value.trim();
+        const name = document.getElementById('simName').value.trim() || 'Εθελοντής ΕΟΔΑ';
+
+        if (!payload) {
+            alert('Παρακαλώ εισάγετε εντολή (π.χ. 1 352 για Check-in ή 2 352 για Check-out).');
+            return;
+        }
+
+        try {
+            const res = await fetch('/.netlify/functions/checkin', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ callsign: payload, name: name, channel: channel })
+            });
+
+            if (res.ok) {
+                alert(`[${channel}] Σήμα ελήφθη & επεξεργάστηκε επιτυχώς!`);
+                location.reload();
+            } else {
+                alert('Σφάλμα κατά την επεξεργασία του σήματος.');
+            }
+        } catch (e) {
+            alert('Σφάλμα σύνδεσης.');
+        }
+    }
+
     async function submitAttendance() {
         const callsignInput = document.getElementById('callsignInput');
         const nameInput = document.getElementById('nameInput');
-        
         formatCallsign(callsignInput);
         formatName(nameInput);
 
@@ -382,20 +383,16 @@
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ callsign, name, action, channel: '🌐 Web App' })
             });
-            
-            const data = await res.json();
-            
             if (res.ok) {
                 alert('Η καταγραφή έγινε με επιτυχία!');
-                document.getElementById('callsignInput').value = '';
-                document.getElementById('nameInput').value = '';
+                callsignInput.value = '';
+                nameInput.value = '';
                 location.reload();
             } else {
-                alert('Σφάλμα: ' + (data.error || 'Αποτυχία καταγραφής στη βάση.'));
+                alert('Σφάλμα κατά την καταγραφή.');
             }
         } catch (e) {
-            console.error(e);
-            alert('Σφάλμα σύνδεσης με τον διακομιστή.');
+            alert('Σφάλμα σύνδεσης.');
         }
     }
 </script>
