@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ΚΕΠΙΧ ΕΟΔ Αττικής - Ημερολόγιο & Παρουσιολόγιο</title>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         :root {
             --eod-blue: #003366;
@@ -82,9 +81,10 @@
             padding-bottom: 15px;
             text-align: center;
         }
-        .header svg {
+        .header img {
             height: 95px;
             width: auto;
+            object-fit: contain;
         }
         .header h2 {
             color: #ffffff;
@@ -233,7 +233,7 @@
 </head>
 <body>
 
-<!-- Οθόνη Κλειδώματος / Password Εισόδου -->
+<!-- Οθόνη Κλειδώματος -->
 <div id="lockScreen">
     <h2>📡 ΚΕΠΙΧ ΕΟΔ Αττικής</h2>
     <p>Εισάγετε τον κωδικό πρόσβασης:</p>
@@ -243,24 +243,7 @@
 
 <div class="container">
     <div class="header">
-        <!-- Ενσωματωμένο Σήμα ΕΟΔ Αττικής -->
-        <svg width="95" height="95" viewBox="0 0 300 320" xmlns="http://www.w3.org/2000/svg">
-            <circle cx="150" cy="150" r="140" fill="#0072CE" stroke="#000" stroke-width="8"/>
-            <rect x="125" y="50" width="50" height="200" fill="#E30613"/>
-            <rect x="50" y="125" width="200" height="50" fill="#E30613"/>
-            <circle cx="150" cy="150" r="140" fill="none" stroke="#FFFFFF" stroke-width="25"/>
-            <circle cx="150" cy="150" r="150" fill="none" stroke="#000000" stroke-width="6"/>
-            <circle cx="150" cy="150" r="126" fill="none" stroke="#000000" stroke-width="4"/>
-            <path id="textArcTop" fill="none" d="M 35,150 A 115,115 0 1,1 265,150" />
-            <text font-family="Arial, sans-serif" font-weight="900" font-size="21" fill="#000">
-                <textPath href="#textArcTop" startOffset="50%" text-anchor="middle">
-                    ΕΛΛΗΝΙΚΗ ΟΜΑΔΑ ΔΙΑΣΩΣΗΣ
-                </textPath>
-            </text>
-            <text x="150" y="288" font-family="Arial, sans-serif" font-weight="900" font-size="22" fill="#000" text-anchor="middle">
-                ΑΤΤΙΚΗΣ
-            </text>
-        </svg>
+        <img src="https://lookaside.fbsbx.com/lookaside/crawler/media/?media_id=627990019372463" alt="ΕΟΔ Αττικής Logo">
         <div>
             <h2>ΕΛΛΗΝΙΚΗ ΟΜΑΔΑ ΔΙΑΣΩΣΗΣ - ΑΤΤΙΚΗΣ</h2>
             <div class="subtitle">ΚΕΠΙΧ - Ημερολόγιο Εργασίας & Παρουσιολόγιο</div>
@@ -275,8 +258,8 @@
 
     <!-- Φόρμα Καταγραφής -->
     <div class="form-group">
-        <input type="text" id="callsignInput" placeholder="Callsign (π.χ. 0352 ή 12)" onblur="formatCallsign(this)">
-        <input type="text" id="nameInput" placeholder="Όνομα στελέχους (π.χ. Γιάννης Παπαδόπουλος)" onblur="formatName(this)">
+        <input type="text" id="callsignInput" placeholder="Callsign (π.χ. 0352 ή 319)" onblur="formatCallsign(this)">
+        <input type="text" id="nameInput" placeholder="Όνομα στελέχους (π.χ. Ανέστης Θεοδωρίδης)" onblur="formatName(this)">
         <select id="actionInput">
             <option value="ON">🟢 Παρουσία Ενεργή (Check-in)</option>
             <option value="OFF">🔴 Αποχώρηση (Check-out)</option>
@@ -341,30 +324,25 @@
         }
     }
 
-    // Κανόνας Callsign:
-    // 0352 -> 352, 0306 -> 306, 0307 -> 307
-    // Όλα τα άλλα -> ΑΤ-
     function formatCallsign(input) {
         let val = input.value.trim().replace(/[^0-9]/g, '');
         if (!val) return;
         
-        if (val === '0352') {
+        if (val === '0352' || val === '352') {
             input.value = '352';
-        } else if (val === '0306') {
+        } else if (val === '0306' || val === '306') {
             input.value = '306';
-        } else if (val === '0307') {
+        } else if (val === '0307' || val === '307') {
             input.value = '307';
         } else {
             input.value = 'ΑΤ-' + val;
         }
     }
 
-    // Αυτόματη μετατροπή Ονόματος: Μικρά Ελληνικά με Κεφαλαία τα πρώτα γράμματα
     function formatName(input) {
         let val = input.value.trim();
         if (!val) return;
 
-        // Χάρτης μετατροπής Greeklish -> Ελληνικά αν γραφτεί με αγγλικούς χαρακτήρες
         const g2e = {
             'a':'α','b':'β','c':'ψ','d':'δ','e':'ε','f':'φ','g':'γ','h':'η','i':'ι','j':'τζ',
             'k':'κ','l':'λ','m':'μ','n':'ν','o':'ο','p':'π','q':'κ','r':'ρ','s':'σ','t':'τ',
@@ -372,8 +350,6 @@
         };
 
         let cleanStr = val.toLowerCase().split('').map(char => g2e[char] || char).join('');
-        
-        // Κεφαλαίο το πρώτο γράμμα σε κάθε λέξη (Όνομα & Επίθετο)
         input.value = cleanStr.replace(/(?:^|\s)\S/g, function(a) { return a.toUpperCase(); });
     }
 
@@ -406,17 +382,20 @@
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ callsign, name, action, channel: '🌐 Web App' })
             });
+            
+            const data = await res.json();
+            
             if (res.ok) {
                 alert('Η καταγραφή έγινε με επιτυχία!');
                 document.getElementById('callsignInput').value = '';
                 document.getElementById('nameInput').value = '';
                 location.reload();
             } else {
-                alert('Σφάλμα κατά την καταγραφή.');
+                alert('Σφάλμα: ' + (data.error || 'Αποτυχία καταγραφής στη βάση.'));
             }
         } catch (e) {
             console.error(e);
-            alert('Σφάλμα σύνδεσης.');
+            alert('Σφάλμα σύνδεσης με τον διακομιστή.');
         }
     }
 </script>
