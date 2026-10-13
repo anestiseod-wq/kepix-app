@@ -1,7 +1,7 @@
 const { createClient } = require('@supabase/supabase-js');
+const querystring = require('querystring');
 
 exports.handler = async (event, context) => {
-  // CORS Headers για αποδοχή αιτημάτων
   const headers = {
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Headers': 'Content-Type',
@@ -20,7 +20,7 @@ exports.handler = async (event, context) => {
     return {
       statusCode: 500,
       headers,
-      body: JSON.stringify({ error: 'Missing Supabase environment variables' })
+      body: JSON.stringify({ error: 'Missing SUPABASE_URL or SUPABASE_KEY environment variables' })
     };
   }
 
@@ -32,8 +32,6 @@ exports.handler = async (event, context) => {
       try {
         rawData = JSON.parse(event.body);
       } catch (e) {
-        // Υποστήριξη Form-encoded δεδομένων (από IVR/SMS/Webhooks)
-        const querystring = require('querystring');
         rawData = querystring.parse(event.body);
       }
     }
@@ -53,33 +51,45 @@ exports.handler = async (event, context) => {
       };
     }
 
-    // Ανάγνωση & Μορφοποίηση Εισόδου
-    let callsign = rawData.callsign || rawData.Digits || rawData.Body || '';
+    // Ανάγνωση εισερχόμενων παραμέτρων από διάφορα κανάλια
+    let rawInput = rawData.callsign || rawData.Digits || rawData.Body || rawData.text || '';
+    let name = rawData.name || rawData.From || 'Στέλεχος ΕΟΔΑ';
+    let channel = rawData.channel || (rawData.Digits ? '📞 Phone IVR' : (rawData.From ? '✉️ SMS / Webhook' : '🌐 Web App'));
     let action = rawData.action || 'ON';
-    let name = rawData.name || 'Στέλεχος ΕΟΔΑ';
-    let channel = rawData.channel || '🌐 Web App';
 
-    // Αν η εισαγωγή προέρχεται από IVR/SMS (π.χ. "1 352" ή "2 352")
-    if (callsign.startsWith('1')) {
+    rawInput = rawInput.trim();
+
+    // Ανάγνωση πρόθεσης 1 (Check-in) ή 2 (Check-out)
+    if (rawInput.startsWith('1')) {
       action = 'ON';
-      callsign = callsign.substring(1).trim();
-    } else if (callsign.startsWith('2')) {
+      rawInput = rawInput.substring(1).trim();
+    } else if (rawInput.startsWith('2')) {
       action = 'OFF';
-      callsign = callsign.substring(1).trim();
+      rawInput = rawInput.substring(1).trim();
     }
 
-    // Κανόνας Callsign (0352/0306/0307 -> 352/306/307, όλα τα άλλα -> ΑΤ-)
-    let numOnly = callsign.replace(/[^0-9]/g, '');
+    // Καθαρισμός και μορφοποίηση Callsign
+    let numOnly = rawInput.replace(/[^0-9]/g, '');
+    let callsign = rawInput;
+
     if (['0352', '352', '0306', '306', '0307', '307'].includes(numOnly)) {
       callsign = numOnly.replace(/^0+/, '');
     } else if (numOnly) {
       callsign = 'ΑΤ-' + numOnly;
     }
 
+    if (!callsign) {
+      return {
+        statusCode: 400,
+        headers,
+        body: JSON.stringify({ error: 'Invalid or missing callsign' })
+      };
+    }
+
     const now = new Date().toISOString();
 
     if (action === 'ON') {
-      // Check-in
+      // 🟢 CHECK-IN
       const { data, error } = await supabase
         .from('attendance')
         .insert([
@@ -94,32 +104,68 @@ exports.handler = async (event, context) => {
 
       if (error) throw error;
 
+      // Επιστροφή TwiML αν είναι τηλεφωνική κλήση
+      if (rawData.Digits) {
+        return {
+          statusCode: 200,
+          headers: { 'Content-Type': 'text/xml' },
+          body: `<Response><Say language="el-GR">Η παρουσια για το κλητικο ${callsign} καταχωρηθηκε επιτυχως.</Say></Response>`
+        };
+      }
+
       return {
         statusCode: 200,
         headers,
         body: JSON.stringify({ message: `Check-in successful for ${callsign}`, callsign, status: 'ON' })
       };
     } else {
-      // Check-out
-      const { data, error } = await supabase
+      // 🔴 CHECK-OUT
+      const { data: existingRecords, error: fetchErr } = await supabase
+        .from('attendance')
+        .select('*')
+        .eq('callsign', callsign)
+        .eq('status', 'ON')
+        .order('check_in', { ascending: false })
+        .limit(1);
+
+      if (fetchErr) throw fetchErr;
+
+      let durationMinutes = null;
+      if (existingRecords && existingRecords.length > 0) {
+        const checkInTime = new Date(existingRecords[0].check_in);
+        const checkOutTime = new Date(now);
+        durationMinutes = Math.round((checkOutTime - checkInTime) / (1000 * 60));
+      }
+
+      const { error: updateErr } = await supabase
         .from('attendance')
         .update({
           status: 'OFF',
-          check_out: now
+          check_out: now,
+          duration_minutes: durationMinutes
         })
         .eq('callsign', callsign)
         .eq('status', 'ON');
 
-      if (error) throw error;
+      if (updateErr) throw updateErr;
+
+      if (rawData.Digits) {
+        return {
+          statusCode: 200,
+          headers: { 'Content-Type': 'text/xml' },
+          body: `<Response><Say language="el-GR">Η αποχωρηση για το κλητικο ${callsign} καταχωρηθηκε επιτυχως.</Say></Response>`
+        };
+      }
 
       return {
         statusCode: 200,
         headers,
-        body: JSON.stringify({ message: `Check-out successful for ${callsign}`, callsign, status: 'OFF' })
+        body: JSON.stringify({ message: `Check-out successful for ${callsign}`, callsign, status: 'OFF', duration_minutes: durationMinutes })
       };
     }
 
   } catch (err) {
+    console.error('Serverless Error:', err);
     return {
       statusCode: 500,
       headers,
