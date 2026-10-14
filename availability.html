@@ -5,16 +5,79 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Δήλωση Διαθεσιμότητας - ΕΟΔΑ</title>
     <style>
-        body { font-family: system-ui, -apple-system, sans-serif; background: #0f172a; color: white; padding: 20px; display: flex; justify-content: center; }
-        .card { background: #1e293b; padding: 20px; border-radius: 12px; max-width: 450px; width: 100%; border: 1px solid #334155; }
-        h2 { color: #38bdf8; text-align: center; margin-top: 0; }
-        label { display: block; margin-top: 12px; color: #94a3b8; font-size: 0.85rem; }
-        input { width: 100%; padding: 12px; margin-top: 4px; border-radius: 6px; border: 1px solid #334155; background: #0f172a; color: white; box-sizing: border-box; text-transform: uppercase; }
-        button { width: 100%; margin-top: 18px; padding: 14px; background: #16a34a; border: none; color: white; border-radius: 6px; font-weight: bold; font-size: 1rem; cursor: pointer; }
-        table { width: 100%; margin-top: 20px; border-collapse: collapse; }
-        th, td { padding: 10px; text-align: left; border-bottom: 1px solid #334155; font-size: 0.9rem; }
-        th { color: #94a3b8; }
-        .badge { color: #4ade80; background: rgba(22, 163, 74, 0.2); padding: 4px 8px; border-radius: 4px; }
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            background-color: #0f172a;
+            color: #f8fafc;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
+        .card {
+            background-color: #1e293b;
+            padding: 20px;
+            border-radius: 12px;
+            max-width: 450px;
+            width: 100%;
+            border: 1px solid #334155;
+        }
+        h2 {
+            color: #38bdf8;
+            text-align: center;
+            margin-top: 0;
+        }
+        label {
+            display: block;
+            margin-top: 12px;
+            color: #94a3b8;
+            font-size: 0.85rem;
+        }
+        input {
+            width: 100%;
+            padding: 12px;
+            margin-top: 5px;
+            border-radius: 6px;
+            border: 1px solid #334155;
+            background-color: #0f172a;
+            color: white;
+            font-size: 1rem;
+            box-sizing: border-box;
+            text-transform: uppercase;
+        }
+        button {
+            width: 100%;
+            margin-top: 18px;
+            padding: 14px;
+            background-color: #16a34a;
+            border: none;
+            color: white;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        table {
+            width: 100%;
+            margin-top: 20px;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #334155;
+            font-size: 0.9rem;
+        }
+        th {
+            color: #94a3b8;
+        }
+        .badge {
+            color: #4ade80;
+            background: rgba(22, 163, 74, 0.2);
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
@@ -45,21 +108,23 @@
 </div>
 
 <script>
-    let data = [];
+    let entries = [];
     function add() {
         const n = document.getElementById('name').value.trim().toUpperCase();
         const h = document.getElementById('hours').value.trim();
-        if(!n || !h) return alert('Συμπληρώστε όλα τα πεδία');
-        
-        data.push({ name: n, hours: h });
+        if (!n || !h) {
+            alert('Συμπληρώστε όλα τα πεδία!');
+            return;
+        }
+        entries.push({ name: n, hours: h });
         document.getElementById('name').value = '';
         document.getElementById('hours').value = '';
         
         const tbody = document.getElementById('list');
-        tbody.innerHTML = data.map(i => `
+        tbody.innerHTML = entries.map(item => `
             <tr>
-                <td><strong>${i.name}</strong></td>
-                <td style="text-align:right;"><span class="badge">${i.hours}</span></td>
+                <td><strong>${item.name}</strong></td>
+                <td style="text-align:right;"><span class="badge">${item.hours}</span></td>
             </tr>
         `).join('');
     }
